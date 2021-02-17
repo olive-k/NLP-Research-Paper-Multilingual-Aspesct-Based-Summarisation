@@ -5,7 +5,7 @@ import numpy as np
 import re
 import urllib.request, json 
 
-def run():
+def run(page_title,output_filename):
     page_url = "https://en.wikipedia.org/wiki/Paris"
     page_title = "paris"
     sections_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title + "&format=json&prop=sections"
