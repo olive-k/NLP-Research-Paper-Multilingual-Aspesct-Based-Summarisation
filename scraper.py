@@ -6,8 +6,6 @@ import re
 import urllib.request, json 
 
 def run(page_title,output_filename):
-    page_url = "https://en.wikipedia.org/wiki/Paris"
-    page_title = "paris"
     sections_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title + "&format=json&prop=sections"
     references_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title + "&format=json&prop=externallinks"
     text_query = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=" + page_title + "&format=json&exsectionformat=wiki"
@@ -65,7 +63,7 @@ def run(page_title,output_filename):
     result['References'] = dict(zip(references_count, archived_references_data))
     result['Text/Reference'] = dict(zip(references_count, references_data_text))
 
-    with open('result.json', 'w') as fp:
+    with open(output_filename, 'w') as fp:
         json.dump(result, fp)
 
 if __name__ == '__main__':
