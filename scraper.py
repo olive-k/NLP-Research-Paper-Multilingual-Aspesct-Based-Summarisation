@@ -30,7 +30,7 @@ def run():
     archived_url = "https://web.archive.org/web/20190330170311/https://www.telegraph.co.uk/travel/city-breaks/most-expensive-and-cheapest-cities-2018/"
     http_request = requests.get(archived_url).text
     print("get worked!!")
-    soup = BeautifulSoup(http_request, 'html.parser').findAll(,class_ = 'component-content')
+    soup = BeautifulSoup(http_request, 'html.parser').findAll('div',class_ = 'component-content')
     print(len(soup))
     print(soup[0].prettify())
 
