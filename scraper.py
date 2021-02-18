@@ -67,4 +67,4 @@ def run(page_title,output_filename):
         json.dump(result, fp)
 
 if __name__ == '__main__':
-    run()
+    run('paris','result.json')
