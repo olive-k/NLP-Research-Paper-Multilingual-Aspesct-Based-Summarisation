@@ -3,27 +3,28 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 import re
-import urllib.request, json 
+import urllib.request
+import json
+import time
 
-def run(page_title,output_filename):
-    sections_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title + "&format=json&prop=sections"
-    references_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title + "&format=json&prop=externallinks"
-    text_query = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=" + page_title + "&format=json&exsectionformat=wiki"
-    keys = ['Sections','Text','References','Text/Reference']
+
+def get_page_json(page_title, domain):
+    start_time = time.perf_counter()
+    sections_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title.title() + "&format=json&prop=sections"
+    references_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title.title() + "&format=json&prop=externallinks"
+    text_query = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=" + page_title.title() + "&format=json&exsectionformat=wiki"
+    keys = ['Sections','Text','References']
     result = {key: None for key in keys}
 
     with urllib.request.urlopen(sections_query) as url:
         sections_data = json.loads(url.read().decode())['parse']['sections']
-        print(sections_data)
     
     with urllib.request.urlopen(references_query) as url:
         references_data = json.loads(url.read().decode())['parse']['externallinks']
-        print(references_data)
     
     with urllib.request.urlopen(text_query) as url:
         text_data = json.loads(url.read().decode())['query']['pages']
         text_data = text_data[next(iter(text_data))]['extract']
-        print(text_data)
     
     sections_title = ["main"]
     sections_values = []
@@ -41,6 +42,7 @@ def run(page_title,output_filename):
 
     result['Sections'] = dict(zip(sections_count, sections_title))
     result['Text'] = dict(zip(sections_count, sections_values))
+    result['No. of sections'] = len(sections_title)
 
     archived_references_data = []
     for data in references_data:
@@ -48,23 +50,35 @@ def run(page_title,output_filename):
             archived_references_data.append(data)
     
     references_data_text = []
+    ref_count = 0
+    mostly_paras = 0
     for archived_url in archived_references_data:
         http_request = requests.get(archived_url).text
-        if BeautifulSoup(http_request, 'html.parser').findAll('article'):
-            soup = BeautifulSoup(http_request, 'html.parser').findAll('article')[0].findChildren()
+        soup = BeautifulSoup(http_request, 'html.parser').findAll('p')
+        if soup:
+            ref_count += 1
             ref_text = ""
+            if len(soup) >= 5:
+                mostly_paras += 1
             for tag in soup:
-                if tag.getText():
+                # Match only those paras with that contain the page title
+                # Assumption here would be that every para about the page title
+                # should ideally mention the page title atleast once. 
+                if page_title.lower() in tag.getText().lower():
                     ref_text = ref_text + tag.getText()
             references_data_text.append(ref_text)
 
-    references_count = [ i for i in range(len(archived_references_data)) ]
+    result['References'] = references_data_text
+    result['No. of references'] = ref_count
+    result['Prop of references with gt 10 paras'] = mostly_paras/ref_count
+    end_time = time.perf_counter() - start_time
+    result['Scraping Time'] = end_time
 
-    result['References'] = dict(zip(references_count, archived_references_data))
-    result['Text/Reference'] = dict(zip(references_count, references_data_text))
+    print(page_title)
+    print(mostly_paras/ref_count)
 
-    with open(output_filename, 'w') as fp:
+    with open('data/domains/'+domain+'/'+page_title+'.json', 'w') as fp:
         json.dump(result, fp)
 
 if __name__ == '__main__':
-    run('paris','result.json')
+    get_page_json('paris',domain)
