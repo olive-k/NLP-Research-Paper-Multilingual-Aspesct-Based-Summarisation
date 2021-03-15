@@ -8,11 +8,11 @@ import json
 import time
 
 
-def get_page_json(page_title, domain):
+def get_page_json(page_title, domain, lang):
     start_time = time.perf_counter()
-    sections_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title.title() + "&format=json&prop=sections"
-    references_query = "https://en.wikipedia.org/w/api.php?action=parse&page=" + page_title.title() + "&format=json&prop=externallinks"
-    text_query = "https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=" + page_title.title() + "&format=json&exsectionformat=wiki"
+    sections_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + page_title.title() + "&format=json&prop=sections"
+    references_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + page_title.title() + "&format=json&prop=externallinks"
+    text_query = "https://{}.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=".format(lang) + page_title.title() + "&format=json&exsectionformat=wiki"
     keys = ['Sections','Text','References']
     result = {key: None for key in keys}
 
@@ -80,5 +80,35 @@ def get_page_json(page_title, domain):
     with open('data/domains/'+domain+'/'+page_title+'.json', 'w') as fp:
         json.dump(result, fp)
 
+
+def get_qids(domain):
+    domain_csv = pd.read_csv("data/qid/"+domain+".csv")
+    qids = domain_csv.iloc[:,0].str.split("http://www.wikidata.org/entity/")
+    qids = [i[1] for i in qids]
+    return qids
+
+
+def get_page_titles(qids,lang):
+    page_titles = []
+    query = "https://www.wikidata.org/w/api.php?"
+    wiki = "{}wiki".format(lang)
+    for qid in qids:
+        params = {"action":"wbgetentities","props":"sitelinks","ids":qid,"sitefilter":wiki, "format":"json"}
+        r = requests.get(url = query, params = params)
+        response = r.json()
+        if 'sitelinks' in response['entities'][qid]:
+            if wiki in response['entities'][qid]['sitelinks']:
+                page_titles.append(response['entities'][qid]['sitelinks'][wiki]['title'])
+            else:
+                print(response['entities'][qid]['sitelinks'])
+
+
 if __name__ == '__main__':
-    get_page_json('paris',domain)
+    domain = 'animals'
+    lang = 'en'
+    qids = get_qids(domain)
+    page_titles = get_page_titles(qids, lang)
+    print(len(page_titles))
+    print(page_titles[:10])
+    #for page_title in page_titles:
+        #get_page_json(page_title, domain, lang)
