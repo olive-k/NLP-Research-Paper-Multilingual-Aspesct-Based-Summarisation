@@ -115,7 +115,6 @@ def dump_json(filename, data):
 
 
 if __name__ == '__main__':
-    '''
     domain = 'animals'
     lang = 'en'
     qids = get_qids(domain)
@@ -132,5 +131,3 @@ if __name__ == '__main__':
         get_page_json(page_title, domain, lang)
     print(domain, ' domain successfully scraped!')
     domain_scraping_time = time.perf_counter() - domain_scraping_start_time
-    '''
-    get_page_json('paris','','en')
