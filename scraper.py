@@ -122,7 +122,7 @@ if __name__ == '__main__':
     page_titles = get_page_titles(qids, lang)
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
-    dump_json('data/domains/animals_page_titles.json'')
+    dump_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 0
     domain_scraping_start_time = time.perf_counter()
