@@ -44,16 +44,19 @@ def get_page_json(page_title, domain, lang):
     result['Text'] = dict(zip(sections_count, sections_values))
     result['No. of sections'] = len(sections_title)
 
-    archived_references_data = []
+    non_archived_references_data = []
     for data in references_data:
-        if "https://web.archive.org/web/" in data:
-            archived_references_data.append(data)
+        if not ("https://web.archive.org/web/" in data):
+            non_archived_references_data.append(data)
     
     references_data_text = []
     ref_count = 0
     mostly_paras = 0
-    for archived_url in archived_references_data:
-        http_request = requests.get(archived_url).text
+    for archived_url in non_archived_references_data:
+        try:
+            http_request = requests.get(archived_url).text
+        except Exception:
+            continue
         soup = BeautifulSoup(http_request, 'html.parser').findAll('p')
         if soup:
             ref_count += 1
@@ -70,12 +73,13 @@ def get_page_json(page_title, domain, lang):
 
     result['References'] = references_data_text
     result['No. of references'] = ref_count
-    result['Prop of references with gt 10 paras'] = mostly_paras/ref_count
+    result['Prop of references with gt 5 paras'] = mostly_paras/ref_count
     end_time = time.perf_counter() - start_time
     result['Scraping Time'] = end_time
 
-    print(page_title)
-    print(mostly_paras/ref_count)
+    print('Page:',page_title)
+    print('Pages with gt 5 paras', mostly_paras/ref_count)
+    print('Scraping Time:', end_time)
 
     with open('data/domains/'+domain+'/'+page_title+'.json', 'w') as fp:
         json.dump(result, fp)
@@ -92,6 +96,7 @@ def get_page_titles(qids,lang):
     page_titles = []
     query = "https://www.wikidata.org/w/api.php?"
     wiki = "{}wiki".format(lang)
+    count = 0
     for qid in qids:
         params = {"action":"wbgetentities","props":"sitelinks","ids":qid,"sitefilter":wiki, "format":"json"}
         r = requests.get(url = query, params = params)
@@ -99,16 +104,33 @@ def get_page_titles(qids,lang):
         if 'sitelinks' in response['entities'][qid]:
             if wiki in response['entities'][qid]['sitelinks']:
                 page_titles.append(response['entities'][qid]['sitelinks'][wiki]['title'])
-            else:
-                print(response['entities'][qid]['sitelinks'])
+                print(count)
+        count += 1
+    return page_titles
+
+
+def dump_json(filename, data):
+    with open(filename, 'w') as fp:
+        json.dump(data, fp)
 
 
 if __name__ == '__main__':
+    '''
     domain = 'animals'
     lang = 'en'
     qids = get_qids(domain)
+    titles_extraction_start_time = time.perf_counter()
     page_titles = get_page_titles(qids, lang)
-    print(len(page_titles))
-    print(page_titles[:10])
-    #for page_title in page_titles:
-        #get_page_json(page_title, domain, lang)
+    titles_extraction_time = time.perf_counter() - titles_extraction_start_time
+    print('Titles extraction Time', titles_extraction_time)
+    dump_json('data/domains/animals_page_titles.json'')
+    total_pages = len(page_titles)
+    page_count = 0
+    domain_scraping_start_time = time.perf_counter()
+    for page_title in page_titles:
+        print('Working on page: ', page_count, '/', total_pages)
+        get_page_json(page_title, domain, lang)
+    print(domain, ' domain successfully scraped!')
+    domain_scraping_time = time.perf_counter() - domain_scraping_start_time
+    '''
+    get_page_json('paris','','en')
