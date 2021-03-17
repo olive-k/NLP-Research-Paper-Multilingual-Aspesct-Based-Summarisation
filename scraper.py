@@ -6,8 +6,10 @@ import re
 import urllib.request
 import json
 import time
+from nltk.corpus import stopwords
 
 
+cachedStopWords = stopwords.words("english")
 no_of_pages_with_no_section = 0
 
 
@@ -85,9 +87,13 @@ def get_page_json(page_title, domain, lang):
         else:
             references_data_without_duplicates.append(data)
 
-    print(references_data_without_duplicates)
-
     page_title_tokens = page_title.split()
+    for i, token in enumerate(page_title_tokens):
+        page_title_tokens[i] = remove_parentheses(token)
+
+    for token in page_title_tokens:
+        if token in cachedStopWords:
+            page_title_tokens.remove(token)
     
     references_data_text = []
     ref_count = 0
@@ -107,7 +113,7 @@ def get_page_json(page_title, domain, lang):
                 # Match only those paras with that contain the page title
                 # Assumption here would be that every para about the page title
                 # should ideally mention the page title atleast once. 
-                if any(remove_parentheses(token.lower()) in tag.getText().lower() for token in page_title_tokens):
+                if any(token.lower() in tag.getText().lower() for token in page_title_tokens):
                     ref_text = ref_text + tag.getText()
             references_data_text.append(ref_text)
 
@@ -166,14 +172,14 @@ def read_json(filename):
 if __name__ == '__main__':
     domain = 'animals'
     lang = 'en'
-
+    
     qids = get_qids(domain)
     titles_extraction_start_time = time.perf_counter()
     page_titles = get_page_titles(qids, lang)
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-
+    
     #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 1
