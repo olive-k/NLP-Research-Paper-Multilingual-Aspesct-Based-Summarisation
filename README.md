@@ -12,5 +12,9 @@ In order to successfully run this code, please follow the steps given below:
             Within the 'qid' directory, place the .csv file containing all the page_titles for the 'animals' domain.
             This is the file that you downloaded from Wikidata after running the query for 'animal'
             
-3. In scraper.py, come to the 'main' block. Change lang = 'en' to whatever lang you are building (eg: 'de', 'fr', etc.)
+3. In scraper.py, 
+
+    In line 12 change the argument of cachedStopWords = stopwords.words("english"), to whatever language you're building
+    Come to the 'main' block. Change lang = 'en' to whatever lang you are building (eg: 'de', 'fr', etc.)
+    
 4. Run scraper.py
