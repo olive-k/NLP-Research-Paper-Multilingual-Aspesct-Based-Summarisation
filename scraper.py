@@ -186,7 +186,11 @@ if __name__ == '__main__':
     domain_scraping_start_time = time.perf_counter()
     for page_title in page_titles:
         print('Working on page: ', page_count, '/', total_pages)
-        get_page_json(page_title, domain, lang)
+        try:
+            get_page_json(page_title, domain, lang)
+        except Exception:
+            print('An unexpected error has occured on page: ', page_title)
+            continue
         page_count += 1
     print(domain, ' domain successfully scraped!')
     domain_scraping_time = time.perf_counter() - domain_scraping_start_time
