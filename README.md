@@ -14,7 +14,8 @@ In order to successfully run this code, please follow the steps given below:
             
 3. In scraper.py, 
 
-    In line 12 change the argument of cachedStopWords = stopwords.words("english"), to whatever language you're building
-    Come to the 'main' block. Change lang = 'en' to whatever lang you are building (eg: 'de', 'fr', etc.)
+    In line 12 change the argument of cachedStopWords = stopwords.words("english"), to whatever language you're building.
     
+    Come to the 'main' block. Change lang = 'en' to whatever lang you are building (eg: 'de', 'fr', etc.)
+
 4. Run scraper.py
