@@ -29,7 +29,6 @@ def get_page_json(page_title, domain, lang):
     keys = ['Sections','Text','References']
     result = {key: None for key in keys}
 
-    print(sections_query)
     with urllib.request.urlopen(sections_query) as url:
         sections_data = json.loads(url.read().decode())['parse']['sections']
     
@@ -64,7 +63,6 @@ def get_page_json(page_title, domain, lang):
         if not ("https://web.archive.org/web/" in data):
             non_archived_references_data.append(data)
     '''
-    print(references_data)
 
     page_title_tokens = page_title.split()
     
@@ -145,13 +143,14 @@ def read_json(filename):
 if __name__ == '__main__':
     domain = 'animals'
     lang = 'en'
-    
+
     qids = get_qids(domain)
     titles_extraction_start_time = time.perf_counter()
     page_titles = get_page_titles(qids, lang)
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
+    
     #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 0
