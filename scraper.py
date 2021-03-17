@@ -82,12 +82,12 @@ def get_page_json(page_title, domain, lang):
         for data in references_data:
             if "https://web.archive.org/web/" in data:
                 archived_references_data.append(data)
-    
-    for data in archived_references_data:
-        if data.split("https://web.archive.org/web/")[1] in non_archived_references_data:
-            continue
-        else:
-            references_data_without_duplicates.append(data)
+
+        for data in archived_references_data:
+            if data.split("https://web.archive.org/web/")[1] in non_archived_references_data:
+                continue
+            else:
+                references_data_without_duplicates.append(data)
 
     page_title_tokens = page_title.split()
     for i, token in enumerate(page_title_tokens):
@@ -194,8 +194,8 @@ if __name__ == '__main__':
         except Exception:
             print('!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: ', page_title)
             logger.error('!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: ' + page_title + '\n')
+            page_count += 1
             continue
-        page_count += 1
     print(domain, ' domain successfully scraped!')
     domain_scraping_time = time.perf_counter() - domain_scraping_start_time
     print('Domain Scraping Time', domain_scraping_time)
