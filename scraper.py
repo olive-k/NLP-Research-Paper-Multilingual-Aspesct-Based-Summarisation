@@ -7,6 +7,7 @@ import urllib.request
 import json
 import time
 from nltk.corpus import stopwords
+from logger import get_logger
 
 
 cachedStopWords = stopwords.words("english")
@@ -184,12 +185,14 @@ if __name__ == '__main__':
     total_pages = len(page_titles)
     page_count = 1
     domain_scraping_start_time = time.perf_counter()
+    logger = get_logger()
     for page_title in page_titles:
         print('Working on page: ', page_count, '/', total_pages)
         try:
             get_page_json(page_title, domain, lang)
         except Exception:
             print('An unexpected error has occured on page: ', page_title)
+            logger.info('An unexpected error has occured on page: ' + page_title + '\n')
             continue
         page_count += 1
     print(domain, ' domain successfully scraped!')
