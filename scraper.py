@@ -192,7 +192,7 @@ if __name__ == '__main__':
             get_page_json(page_title, domain, lang)
         except Exception:
             print('!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: ', page_title)
-            logger.info('!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: ' + page_title + '\n')
+            logger.error('!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: ' + page_title + '\n')
             continue
         page_count += 1
     print(domain, ' domain successfully scraped!')
