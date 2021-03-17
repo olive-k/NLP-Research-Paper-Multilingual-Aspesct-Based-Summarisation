@@ -3,3 +3,4 @@
 .vscode/*
 *.csv
 domain_list_scraper.py
+__pycache__/*
