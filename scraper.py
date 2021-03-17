@@ -77,10 +77,11 @@ def get_page_json(page_title, domain, lang):
 
     references_data_without_duplicates.extend(non_archived_references_data)
 
-    archived_references_data = []
-    for data in references_data:
-        if "https://web.archive.org/web/" in data:
-            archived_references_data.append(data)
+    if(len(non_archived_references_data) > 10):
+        archived_references_data = []
+        for data in references_data:
+            if "https://web.archive.org/web/" in data:
+                archived_references_data.append(data)
     
     for data in archived_references_data:
         if data.split("https://web.archive.org/web/")[1] in non_archived_references_data:
