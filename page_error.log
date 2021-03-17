@@ -1,0 +1,9 @@
+ERROR:page_error_logger:!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: Älgen Stolta
+
+ERROR:page_error_logger:'ascii' codec can't encode character '\xc4' in position 33: ordinal not in range(128)
+ERROR:page_error_logger:!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: Elizabeth Ann (ferret)
+
+ERROR:page_error_logger:list index out of range
+ERROR:page_error_logger:!!!!!!!!!!!!!!!!!!!!!!! An unexpected error has occured on page: Nadungamuwa Raja
+
+ERROR:page_error_logger:list index out of range

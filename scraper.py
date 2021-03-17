@@ -77,7 +77,7 @@ def get_page_json(page_title, domain, lang):
 
     references_data_without_duplicates.extend(non_archived_references_data)
 
-    if(len(non_archived_references_data) > 10):
+    if(len(non_archived_references_data) < 10):
         archived_references_data = []
         for data in references_data:
             if "https://web.archive.org/web/" in data:
@@ -174,15 +174,15 @@ def read_json(filename):
 if __name__ == '__main__':
     domain = 'animals'
     lang = 'en'
-    
+    '''
     qids = get_qids(domain)
     titles_extraction_start_time = time.perf_counter()
     page_titles = get_page_titles(qids, lang)
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-    
-    #page_titles = read_json('data/domains/animals_page_titles.json')
+    '''
+    page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 1
     domain_scraping_start_time = time.perf_counter()
