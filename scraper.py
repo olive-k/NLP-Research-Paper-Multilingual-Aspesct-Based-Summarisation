@@ -8,6 +8,9 @@ import json
 import time
 
 
+no_of_pages_with_no_section = 0
+
+
 def remove_tags(raw_html):
     pattern = re.compile('<.*?>')
     removed_text = re.sub(pattern, '', raw_html)
@@ -41,7 +44,12 @@ def get_page_json(page_title, domain, lang):
     
     sections_title = ["main"]
     sections_values = []
-    sections_value, text_data = text_data.split("== "+ remove_tags(sections_data[0]['line']) + " ==")
+    try:
+        sections_value, text_data = text_data.split("== "+ remove_tags(sections_data[0]['line']) + " ==")
+    except IndexError:
+        global no_of_pages_with_no_section
+        no_of_pages_with_no_section += 1
+        return
     sections_values.append(sections_value)
     for ind, value in enumerate(sections_data):
         if ind == len(sections_data) - 2:
@@ -57,19 +65,34 @@ def get_page_json(page_title, domain, lang):
     result['Text'] = dict(zip(sections_count, sections_values))
     result['No. of sections'] = len(sections_title)
     
-    '''
+    references_data_without_duplicates = []
+
     non_archived_references_data = []
     for data in references_data:
         if not ("https://web.archive.org/web/" in data):
             non_archived_references_data.append(data)
-    '''
+
+    references_data_without_duplicates.extend(non_archived_references_data)
+
+    archived_references_data = []
+    for data in references_data:
+        if "https://web.archive.org/web/" in data:
+            archived_references_data.append(data)
+    
+    for data in archived_references_data:
+        if data.split("https://web.archive.org/web/")[1] in non_archived_references_data:
+            continue
+        else:
+            references_data_without_duplicates.append(data)
+
+    print(references_data_without_duplicates)
 
     page_title_tokens = page_title.split()
     
     references_data_text = []
     ref_count = 0
     mostly_paras = 0
-    for all_url in references_data:
+    for all_url in references_data_without_duplicates:
         try:
             http_request = requests.get(all_url).text
         except Exception:
@@ -150,10 +173,10 @@ if __name__ == '__main__':
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-    
+
     #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
-    page_count = 0
+    page_count = 1
     domain_scraping_start_time = time.perf_counter()
     for page_title in page_titles:
         print('Working on page: ', page_count, '/', total_pages)
@@ -162,3 +185,4 @@ if __name__ == '__main__':
     print(domain, ' domain successfully scraped!')
     domain_scraping_time = time.perf_counter() - domain_scraping_start_time
     print('Domain Scraping Time', domain_scraping_time)
+    print('No of pages with no sections', no_of_pages_with_no_section)
