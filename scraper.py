@@ -50,17 +50,16 @@ def get_page_json(page_title, domain, lang):
     try:
         sections_value, text_data = text_data.split("== "+ remove_tags(sections_data[0]['line']) + " ==")
     except IndexError:
-        global no_of_pages_with_no_section
-        no_of_pages_with_no_section += 1
-        return
+        sections_value = text_data
     sections_values.append(sections_value)
-    for ind, value in enumerate(sections_data):
-        if ind == len(sections_data) - 2:
-            break
-        header = int(sections_data[ind+1]['level'])*'='
-        sections_value, text_data = text_data.split(header + " " + remove_tags(sections_data[ind+1]['line']) + " " + header)
-        sections_title.append(sections_data[ind]['line'])
-        sections_values.append(sections_value)
+    if len(sections_data) != 0:
+        for ind, value in enumerate(sections_data):
+            if ind == len(sections_data) - 2:
+                break
+            header = int(sections_data[ind+1]['level'])*'='
+            sections_value, text_data = text_data.split(header + " " + remove_tags(sections_data[ind+1]['line']) + " " + header)
+            sections_title.append(sections_data[ind]['line'])
+            sections_values.append(sections_value)
 
     sections_count = [ i for i in range(len(sections_title)) ]
 
@@ -102,7 +101,7 @@ def get_page_json(page_title, domain, lang):
     mostly_paras = 0
     for all_url in references_data_without_duplicates:
         try:
-            http_request = requests.get(all_url).text
+            http_request = requests.get(all_url, timeout = 5.0).text
         except Exception:
             continue
         soup = BeautifulSoup(http_request, 'html.parser').findAll('p')
@@ -174,20 +173,21 @@ def read_json(filename):
 if __name__ == '__main__':
     domain = 'animals'
     lang = 'en'
-    '''
+    
     qids = get_qids(domain)
     titles_extraction_start_time = time.perf_counter()
     page_titles = get_page_titles(qids, lang)
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-    '''
-    page_titles = read_json('data/domains/animals_page_titles.json')
+    
+    #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 1
     domain_scraping_start_time = time.perf_counter()
     logger = get_logger()
     for page_title in page_titles:
+        #if page_count >= 21:
         print('Working on page: ', page_count, '/', total_pages)
         try:
             get_page_json(page_title, domain, lang)
@@ -199,6 +199,7 @@ if __name__ == '__main__':
             logger.error(str(e))
             continue
         page_count += 1
+        #page_count += 1
     print(domain, ' domain successfully scraped!')
     domain_scraping_time = time.perf_counter() - domain_scraping_start_time
     print('Domain Scraping Time', domain_scraping_time)
