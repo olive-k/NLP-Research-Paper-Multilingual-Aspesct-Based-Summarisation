@@ -8,6 +8,7 @@ import json
 import time
 from nltk.corpus import stopwords
 from logger import get_logger
+from tqdm import tqdm
 
 
 cachedStopWords = stopwords.words("english")
@@ -99,7 +100,7 @@ def get_page_json(page_title, domain, lang):
     references_data_text = []
     ref_count = 0
     mostly_paras = 0
-    for all_url in references_data_without_duplicates:
+    for all_url in tqdm(references_data_without_duplicates):
         try:
             http_request = requests.get(all_url, timeout = 5.0).text
         except Exception:
@@ -180,7 +181,7 @@ if __name__ == '__main__':
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-    
+
     #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 1
