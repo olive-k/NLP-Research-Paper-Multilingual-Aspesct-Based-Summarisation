@@ -53,7 +53,7 @@ def get_page_json(page_title, domain, lang):
     except IndexError:
         sections_value = text_data
     sections_values.append(sections_value)
-    if len(sections_data) != 0:
+    if not (len(sections_data) in [0, 1]):
         for ind, value in enumerate(sections_data):
             if ind == len(sections_data) - 2:
                 break
@@ -181,14 +181,14 @@ if __name__ == '__main__':
     titles_extraction_time = time.perf_counter() - titles_extraction_start_time
     print('Titles extraction Time', titles_extraction_time)
     dump_json('data/domains/animals_page_titles.json', page_titles)
-
+    
     #page_titles = read_json('data/domains/animals_page_titles.json')
     total_pages = len(page_titles)
     page_count = 1
     domain_scraping_start_time = time.perf_counter()
     logger = get_logger()
     for page_title in page_titles:
-        #if page_count >= 21:
+        if page_count >= 19:
         print('Working on page: ', page_count, '/', total_pages)
         try:
             get_page_json(page_title, domain, lang)
