@@ -188,7 +188,7 @@ if __name__ == '__main__':
     domain_scraping_start_time = time.perf_counter()
     logger = get_logger()
     for page_title in page_titles:
-        if page_count >= 19:
+        #if page_count >= 19:
         print('Working on page: ', page_count, '/', total_pages)
         try:
             get_page_json(page_title, domain, lang)
