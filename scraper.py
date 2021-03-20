@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import re
 import urllib.request
+from urllib.parse import quote
 import json
 import time
 from nltk.corpus import stopwords
@@ -27,11 +28,11 @@ def remove_parentheses(text):
 
 def get_page_json(page_title, domain, lang):
     start_time = time.perf_counter()
-    sections_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + page_title + "&format=json&prop=sections"
+    sections_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + quote(page_title) + "&format=json&prop=sections"
     sections_query = sections_query.replace(' ', '%20')
-    references_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + page_title + "&format=json&prop=externallinks"
+    references_query = "https://{}.wikipedia.org/w/api.php?action=parse&page=".format(lang) + quote(page_title) + "&format=json&prop=externallinks"
     references_query = references_query.replace(' ', '%20')
-    text_query = "https://{}.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=".format(lang) + page_title + "&format=json&exsectionformat=wiki"
+    text_query = "https://{}.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext&titles=".format(lang) + quote(page_title) + "&format=json&exsectionformat=wiki"
     text_query = text_query.replace(' ', '%20')
     keys = ['Sections','Text','References']
     result = {key: None for key in keys}
