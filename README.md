@@ -22,9 +22,9 @@ In order to successfully run this code, please follow the steps given below:
 
 5. Run anlayzer.py to get the basic statistcs of the datasets.
 
-    EX. python anlyzer.py --domain animals --top 20
+    EX. python anlyzer.py --domain animals_en --top 20
     
     This will generate two files:
     
-    1)animals_top20_sections.csv. This contains the top 20 most frequent sections for animal domain.
+    1)animals_top20_sections.csv. This contains the top 20 most frequent sections for English animal domain.
     2)animals_info.csv. This contains some statistics of the animal domain including page number, average section number, etc.
